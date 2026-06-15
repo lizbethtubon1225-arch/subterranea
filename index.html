@@ -3,292 +3,377 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cátedra: Subterránea II - Sistemas Combinados</title>
+    <title>Sistemas Combinados - Visor Interactivo</title>
     <style>
         :root {
             --primary-color: #1a365d;
             --secondary-color: #2b6cb0;
-            --accent-color: #dd6b20;
+            --sidebar-bg: #2d3748;
+            --sidebar-text: #edf2f7;
             --bg-color: #f7fafc;
             --text-color: #2d3748;
-            --card-bg: #ffffff;
+            --accent-color: #dd6b20;
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            line-height: 1.6;
             margin: 0;
             padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
         }
 
-        /* Encabezado Principal */
-        header {
-            background: linear-gradient(135deg, var(--primary-color) 0%, #2a4365 100%);
-            color: white;
-            padding: 40px 20px;
+        /* BARRA LATERAL (MENÚ DESPLEGABLE / NAVEGACIÓN) */
+        .sidebar {
+            width: 280px;
+            background-color: var(--sidebar-bg);
+            color: var(--sidebar-text);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            background-color: var(--primary-color);
             text-align: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
 
-        header h1 {
+        .sidebar-header h3 {
             margin: 0;
-            font-size: 2.5rem;
-            font-weight: 700;
+            font-size: 1.1rem;
             letter-spacing: 0.5px;
         }
 
-        header h2 {
-            margin: 10px 0 0 0;
-            font-size: 1.4rem;
-            font-weight: 400;
-            opacity: 0.9;
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            overflow-y: auto;
+            flex-grow: 1;
         }
 
-        .meta-info {
-            margin-top: 20px;
+        .sidebar-menu li {
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            cursor: pointer;
             font-size: 0.95rem;
-            opacity: 0.8;
-            border-top: 1px solid rgba(255,255,255,0.2);
-            padding-top: 15px;
-            display: inline-block;
+            transition: background 0.2s;
         }
 
-        /* Contenedor de Contenido */
-        .container {
-            max-width: 1000px;
-            margin: 40px auto;
-            padding: 0 20px;
-        }
-
-        /* Secciones en tarjetas */
-        section {
-            background: var(--card-bg);
-            padding: 35px;
-            margin-bottom: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            border-left: 5px solid var(--secondary-color);
-        }
-
-        h2.section-title {
-            color: var(--primary-color);
-            font-size: 1.6rem;
-            margin-top: 0;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 10px;
-        }
-
-        h3.subsection-title {
-            color: var(--secondary-color);
-            font-size: 1.2rem;
-            margin-top: 25px;
-            margin-bottom: 10px;
-        }
-
-        p {
-            margin-bottom: 15px;
-            text-align: justify;
-        }
-
-        ul {
-            margin-bottom: 20px;
-            padding-left: 20px;
-        }
-
-        li {
-            margin-bottom: 8px;
-        }
-
-        /* Estilos de Tablas */
-        .table-responsive {
-            overflow-x: auto;
-            margin: 25px 0;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            font-size: 0.95rem;
-        }
-
-        th {
-            background-color: var(--primary-color);
+        .sidebar-menu li:hover, .sidebar-menu li.active {
+            background-color: var(--secondary-color);
             color: white;
-            text-align: left;
-            padding: 12px 15px;
             font-weight: 600;
         }
 
-        td {
-            padding: 12px 15px;
-            border-bottom: 1px solid #e2e8f0;
+        /* ÁREA PRINCIPAL DE LA DIAPOSITIVA */
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            height: 100%;
+            background-color: #e2e8f0;
         }
 
-        tr:nth-child(even) {
-            background-color: #f8fafc;
+        /* CONTENEDOR DE LA DIAPOSITIVA ACTIVA */
+        .slide-container {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            overflow-y: auto;
         }
 
-        tr:hover {
-            background-color: #edf2f7;
+        .slide {
+            background: white;
+            width: 100%;
+            max-width: 850px;
+            height: 550px;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            box-sizing: border-box;
+            display: none; /* Se ocultan todas por defecto */
+            flex-direction: column;
+            position: relative;
         }
 
-        /* Destacados / Hipótesis */
+        .slide.active {
+            display: flex; /* Solo se muestra la activa */
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* TEXTO DENTRO DE LAS DIAPOSITIVAS */
+        .slide h2 {
+            color: var(--primary-color);
+            margin-top: 0;
+            border-bottom: 2px solid #edf2f7;
+            padding-bottom: 10px;
+            font-size: 1.8rem;
+        }
+
+        .slide h3 {
+            color: var(--secondary-color);
+            margin-top: 10px;
+        }
+
+        .slide p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            text-align: justify;
+            color: #4a5568;
+        }
+
         .highlight-box {
             background-color: #fffaf0;
             border-left: 5px solid var(--accent-color);
             padding: 20px;
-            margin: 20px 0;
-            border-radius: 4px;
+            margin: 15px 0;
             font-style: italic;
+            border-radius: 4px;
         }
 
-        /* Footer */
-        footer {
-            text-align: center;
-            padding: 30px 20px;
-            background-color: #1a202c;
-            color: #a0aec0;
+        /* TABLAS ESTILIZADAS */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
             font-size: 0.9rem;
-            margin-top: 60px;
+        }
+        th { background-color: var(--primary-color); color: white; padding: 10px; text-align: left; }
+        td { padding: 10px; border-bottom: 1px solid #e2e8f0; }
+        tr:nth-child(even) { background-color: #f8fafc; }
+
+        /* BOTONES DE NAVEGACIÓN (ADELANTAR Y RETROCEDER) */
+        .controls {
+            background-color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #cbd5e0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+        }
+
+        .nav-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .nav-btn:hover { background-color: var(--secondary-color); }
+        .nav-btn:disabled { background-color: #cbd5e0; cursor: not-allowed; }
+
+        .slide-counter {
+            font-weight: 600;
+            color: #718096;
+            font-size: 0.95rem;
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>TEMA: SISTEMAS COMBINADOS</h1>
-        <h2>Proyecto Mina Chuquicamata Subterránea (PMCHS)</h2>
-        <div class="meta-info">
-            <strong>UNIVERSIDAD CENTRAL DEL ECUADOR</strong><br>
-            Facultad de Ingeniería en Geología, Minas, Petróleos y Ambiental<br>
-            <strong>Realizado por:</strong> Cristina Tubón | <strong>Docente:</strong> Doc. Marco Zaldumbide | 2024-2025
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h3>SUBTERRÁNEA II</h3>
+            <span style="font-size: 0.8rem; opacity: 0.8;">UCE - FIGEMPA [cite: 16]</span>
         </div>
-    </header>
+        <ul class="sidebar-menu" id="menu">
+            <li class="active" onclick="irADiapositiva(0)">Portada del Informe</li>
+            <li onclick="irADiapositiva(1)">1. Antecedentes</li>
+            <li onclick="irADiapositiva(2)">2. Objetivos del Proyecto</li>
+            <li onclick="irADiapositiva(3)">3. Hipótesis Técnica</li>
+            <li onclick="irADiapositiva(4)">4.1 Geología del Pórfido</li>
+            <li onclick="irADiapositiva(5)">4.2 Parámetros Rajo Abierto</li>
+            <li onclick="irADiapositiva(6)">4.3 Explotación Subterránea</li>
+            <li onclick="irADiapositiva(7)">5. Plan de Producción</li>
+            <li onclick="irADiapositiva(8)">6. Innovación y Robótica</li>
+        </ul>
+    </div>
 
-    <div class="container">
+    <div class="main-content">
+        <div class="slide-container">
 
-        <section id="antecedentes">
-            <h2 class="section-title">1. Antecedentes</h2>
-            <p>El complejo minero de la División Chuquicamata se encuentra a 1.650 kilómetros al norte de Santiago, en la II Región de Antofagasta, a una altitud de 2.900 metros sobre el nivel del mar[cite: 34]. Este complejo incluye tres minas a cielo abierto: Chuquicamata, Radomiro Tomic y Mina Sur[cite: 35]. Sin embargo, la intensa explotación de la Mina Chuquicamata durante los últimos 100 años ha provocado un aumento en la profundidad del rajo, lo que ha incrementado la relación estéril/mineral[cite: 36]. Esto, a su vez, ha elevado los costos operativos debido a la mayor distancia que deben recorrer los camiones y equipos mineros, haciendo que la operación sea menos rentable[cite: 37].</p>
-            <p>En respuesta a esta situación, CODELCO ha desarrollado un plan de negocios y una estrategia de proyectos estructurales destinados a sostener la producción de finos de cobre en las próximas décadas[cite: 38]. Como parte de este esfuerzo, se realizaron estudios de exploración en profundidad que confirmaron la existencia de importantes recursos mineros remanentes bajo los taludes finales del rajo, cuya vida económica se proyectaba para concluir en 2018[cite: 39]. La identificación de estos recursos ha llevado a la evaluación de la viabilidad técnica y económica de implementar minería subterránea en el yacimiento, dando origen al Proyecto Mina Chuquicamata Subterránea (PMCHS)[cite: 40].</p>
-        </section>
-
-        <section id="objetivos">
-            <h2 class="section-title">2. Objetivos</h2>
-            <h3 class="subsection-title">2.1 Objetivo General</h3>
-            <p>Identificar, a través de una investigación exhaustiva, un modelo de mina que implemente eficazmente un sistema de explotación combinado, integrando técnicas de minería a cielo abierto y subterráneo para maximizar la recuperación de recursos minerales[cite: 49].</p>
-            
-            <h3 class="subsection-title">2.2 Objetivos Específicos</h3>
-            <ul>
-                <li>Describir el proceso que llevó a la implementación del sistema de explotación combinada, destacando las etapas claves y decisiones estratégicas[cite: 51].</li>
-                <li>Investigar las tecnologías innovadoras aplicadas en la mina Chuquicamata y su impacto en la eficiencia y sostenibilidad de las operaciones[cite: 52].</li>
-                <li>Analizar las tendencias de producción y reservas del periodo 2019 al 2025 mediante tablas, identificando patrones y proyecciones relevantes[cite: 53].</li>
-            </ul>
-        </section>
-
-        <section id="hipotesis">
-            <h2 class="section-title">3. Hipótesis</h2>
-            <div class="highlight-box">
-                "La transición hacia un sistema de explotación subterránea en el complejo minero de Chuquicamata, como respuesta a la disminución de la rentabilidad de la minería a cielo abierto, permite una recuperación más eficiente de recursos minerales, mejora la sostenibilidad económica del proyecto a largo plazo y a la vez reducirá significativamente los costos operativos a través de la optimización de los procesos de extracción y transporte." [cite: 55]
+            <div class="slide active">
+                <div style="text-align: center; margin-top: 40px;">
+                    <h2 style="border:none; font-size: 2.2rem; color: var(--primary-color);">SISTEMAS COMBINADOS</h2>
+                    <h3 style="color: var(--accent-color);">Caso de Estudio: Chuquicamata [cite: 12, 40]</h3>
+                    <div style="margin-top: 50px; line-height: 2; font-size: 1.1rem;">
+                        <p style="text-align:center;"><strong>UNIVERSIDAD CENTRAL DEL ECUADOR</strong><br> [cite: 9]
+                        Facultad de Ingeniería en Geología, Minas, Petróleos y Ambiental [cite: 9]<br>
+                        <strong>Realizado por:</strong> Cristina Tubón [cite: 13]<br>
+                        <strong>Docente:</strong> Doc. Marco Zaldumbide [cite: 14]<br>
+                        Periodo: 2024-2025 [cite: 15]</p>
+                    </div>
+                </div>
             </div>
-            <p>Dado que los estudios han identificado una cantidad significativa de recursos mineros remanentes bajo los taludes finales del rajo, se espera que la minería subterránea permita acceder a estos depósitos de manera más efectiva[cite: 56]. Esto podría prolongar la vida útil del yacimiento más allá de 2018, proyectando una continuidad de operaciones hasta aproximadamente 2060[cite: 57]. La implementación del PMCHS no solo buscará recuperar minerales, sino también asegurar que la operación sea económicamente viable al reducir la relación estéril/mineral y, por ende, los costos asociados al transporte de mineral[cite: 58].</p>
-        </section>
 
-        <section id="marco-teorico">
-            <h2 class="section-title">4. Marco Teórico</h2>
-            
-            <h3 class="subsection-title">4.1 Geología del Yacimiento</h3>
-            <p>Chuquicamata es un yacimiento de cobre diseminado que está delimitado al Oeste por una falla regional denominada Falla Oeste, presentando una secuencia de alteración de las rocas en el sentido Oeste-Este con una gran persistencia en la vertical[cite: 133]. Esto se traduce en una fuerte intercalación de rocas más y menos competentes en el lado Oeste del yacimiento, diversidad que decae gradualmente hacia el lado Este, donde las rocas presentan características más uniformes[cite: 134]. La presencia de mineralización es más intensa en las rocas con mayor alteración, con una gradación hacia el Este[cite: 135].</p>
+            <div class="slide">
+                <h2>1. Antecedentes</h2>
+                <p>El complejo minero de la División Chuquicamata se encuentra a 1.650 kilómetros al norte de Santiago, en la II Región de Antofagasta, a una altitud de 2.900 metros sobre el nivel del mar[cite: 34]. Este complejo incluye tres minas a cielo abierto[cite: 35].</p>
+                <p>Sin embargo, la intensa explotación de la Mina Chuquicamata durante los últimos 100 años ha provocado un aumento en la profundidad del rajo, lo que ha incrementado la relación estéril/mineral[cite: 36]. Esto, a su vez, ha elevado los costos operativos debido a la mayor distancia que deben recorrer los camiones y equipos mineros, haciendo que la operación sea menos rentable[cite: 37].</p>
+            </div>
 
-            <h3 class="subsection-title">4.2 Método de Explotación a Cielo Abierto (Open Pit)</h3>
-            <p>Las dimensiones finales y los parámetros de diseño del tajo abierto de Chuquicamata corresponden a las siguientes características técnicas descritas en el informe[cite: 172, 173]:</p>
-            
-            <div class="table-responsive">
+            <div class="slide">
+                <h2>2. Objetivos del Proyecto</h2>
+                <h3>2.1 Objetivo General</h3>
+                <p>Identificar, a través de una investigación exhaustiva, un modelo de mina que implemente eficazmente un sistema de explotación combinado, integrando técnicas de minería a cielo abierto y subterráneo para maximizar la recuperación de recursos minerales[cite: 49].</p>
+                <h3>2.2 Objetivos Específicos</h3>
+                <ul>
+                    <li>Describir el proceso que llevó a la implementación del sistema de explotación combinada[cite: 51].</li>
+                    <li>Investigar las tecnologías innovadoras aplicadas en la mina Chuquicamata y su impacto en la eficiencia[cite: 52].</li>
+                    <li>Analizar las tendencias de producción y reservas del periodo 2019 al 2025[cite: 53].</li>
+                </ul>
+            </div>
+
+            <div class="slide">
+                <h2>3. Hipótesis Técnica</h2>
+                <div class="highlight-box">
+                    "La transición hacia un sistema de explotación subterránea en el complejo minero de Chuquicamata, como respuesta a la disminución de la rentabilidad de la minería a cielo abierto, permite una recuperación más eficiente de recursos minerales, mejora la sostenibilidad económica del proyecto a largo plazo y a la vez reducirá significativamente los costos operativos..." [cite: 55]
+                </div>
+                <p>La implementación del PMCHS no solo buscará recuperar minerales, sino también asegurar que la operación sea económicamente viable al reducir la relación estéril/mineral y los costos asociados al transporte[cite: 58].</p>
+            </div>
+
+            <div class="slide">
+                <h2>4.1 Geología del Yacimiento</h2>
+                <p>Chuquicamata es un yacimiento de cobre diseminado que está delimitado al Oeste por una falla regional denominada Falla Oeste, presentando una secuencia de alteración de las rocas en el sentido Oeste-Este con una gran persistencia en la vertical[cite: 133].</p>
+                <p>Esto se traduce en una fuerte intercalación de rocas más y menos competentes en el lado Oeste del yacimiento, diversidad que decae gradualmente hacia el lado Este, donde las rocas presentan características más uniformes[cite: 134]. La presencia de mineralización es más intensa en las rocas con mayor alteración[cite: 135].</p>
+            </div>
+
+            <div class="slide">
+                <h2>4.2 Parámetros Cielo Abierto (Open Pit)</h2>
+                <p>Dimensiones y parámetros globales de diseño geométrico del Pit final[cite: 171, 178]:</p>
                 <table>
                     <thead>
-                        <tr>
-                            <th>Parámetro de Diseño del Pit</th>
-                            <th>Dimensión / Valor Técnico</th>
-                        </tr>
+                        <tr><th>Parámetro Geométrico</th><th>Dimensión Técnica</th></tr>
                     </thead>
                     <tbody>
-                        <tr><td>Largo</td><td>4.200 m [cite: 181]</td></tr>
-                        <tr><td>Ancho</td><td>3.000 m [cite: 181]</td></tr>
-                        <tr><td>Profundidad</td><td>803 m [cite: 181]</td></tr>
-                        <tr><td>Ancho Rampa Principal</td><td>30 m [cite: 181]</td></tr>
-                        <tr><td>Ancho Rampa Secundaria</td><td>35 m [cite: 181]</td></tr>
+                        <tr><td>Largo del Pit</td><td>4.200 m [cite: 181]</td></tr>
+                        <tr><td>Ancho del Pit</td><td>3.000 m [cite: 181]</td></tr>
+                        <tr><td>Profundidad Final</td><td>803 m [cite: 181]</td></tr>
                         <tr><td>Pendiente Media Rampa Sector Este</td><td>10% [cite: 181]</td></tr>
-                        <tr><td>Pendiente Media Rampa Sector Oeste</td><td>9% [cite: 181]</td></tr>
                         <tr><td>Altura de Banco</td><td>22 m [cite: 181]</td></tr>
                         <tr><td>Ángulo de Talud Global</td><td>42° [cite: 181]</td></tr>
-                        <tr><td>Ancho Catch-Bench</td><td>30 m [cite: 181]</td></tr>
                     </tbody>
                 </table>
             </div>
 
-            <h3 class="subsection-title">4.3 Método de Explotación Subterránea</h3>
-            <p>La explotación subterránea se desarrollará aplicando el método de <strong>hundimiento por bloques (Block Caving)</strong>, específicamente en una configuración de <strong>Macro Bloques</strong>[cite: 183]. Este método masivo ofrece ventajas críticas en costos y altas capacidades de producción, adaptándose óptimamente a las condiciones geotécnicas del macizo[cite: 184]. El proyecto está formulado a partir de cuatro niveles de explotación en las cotas de elevación 1.841 m, 1.625 m, 1.409 m y 1.193 m[cite: 220].</p>
-            
-            <p>Cada macro bloque contempla conceptualmente en su diseño el desarrollo de seis niveles operativos descendentes[cite: 243]:</p>
-            <ul>
-                <li>Nivel de hundimiento [cite: 244]</li>
-                <li>Nivel de producción (donde operan los equipos LHD) [cite: 245, 261]</li>
-                <li>Nivel de inyección de aire [cite: 246]</li>
-                <li>Nivel de extracción de aire [cite: 247]</li>
-                <li>Nivel de chancado primario [cite: 248]</li>
-                <li>Nivel de transporte intermedio [cite: 249]</li>
-            </ul>
-        </section>
+            <div class="slide">
+                <h2>4.3 Explotación Subterránea</h2>
+                <p>La explotación se desarrollará aplicando el método de <strong>hundimiento por bloques (Block Caving)</strong>, en configuración de <strong>Macro Bloques</strong>[cite: 183]. Cada macro bloque contempla en su diseño el desarrollo de seis niveles operativos[cite: 243]:</p>
+                <div style="display:flex; justify-content: space-around; margin-top:20px;">
+                    <ul>
+                        <li>Nivel de hundimiento [cite: 244]</li>
+                        <li>Nivel de producción (LHD) [cite: 245, 261]</li>
+                        <li>Nivel de inyección de aire [cite: 246]</li>
+                    </ul>
+                    <ul>
+                        <li>Nivel de extracción de aire [cite: 247]</li>
+                        <li>Nivel de chancado [cite: 248]</li>
+                        <li>Nivel de transporte [cite: 249]</li>
+                    </ul>
+                </div>
+            </div>
 
-        <section id="produccion">
-            <h2 class="section-title">5. Plan de Producción y Leyes (Periodo 2019 - 2025)</h2>
-            <p>A continuación se tabulan las tendencias de producción física y las variaciones de ley esperadas durante el periodo de Ramp Up del proyecto minero subterráneo[cite: 53, 373, 456]:</p>
-
-            <div class="table-responsive">
+            <div class="slide">
+                <h2>5. Plan de Producción (Ramp Up)</h2>
+                <p>Plan de producción física y variaciones de leyes de cobre para el periodo evaluado[cite: 456, 457]:</p>
                 <table>
                     <thead>
-                        <tr>
-                            <th>Año de Operación</th>
-                            <th>Producción (kton)</th>
-                            <th>Ritmo (ktpd)</th>
-                            <th>Ley Cu (%)</th>
-                            <th>Ley Mo (%)</th>
-                        </tr>
+                        <tr><th>Año</th><th>Producción (kton)</th><th>Ritmo (ktpd)</th><th>Ley Cu (%)</th><th>Ley Mo (%)</th></tr>
                     </thead>
                     <tbody>
                         <tr><td>2019</td><td>3,600 [cite: 457]</td><td>10 [cite: 457]</td><td>1.06 [cite: 457]</td><td>0.07 [cite: 457]</td></tr>
-                        <tr><td>2020</td><td>5,400 [cite: 457]</td><td>15 [cite: 457]</td><td>1.10 [cite: 457]</td><td>0.07 [cite: 457]</td></tr>
                         <tr><td>2021</td><td>7,200 [cite: 457]</td><td>20 [cite: 457]</td><td>1.15 [cite: 457]</td><td>0.08 [cite: 457]</td></tr>
-                        <tr><td>2022</td><td>14,400 [cite: 457]</td><td>40 [cite: 457]</td><td>1.10 [cite: 457]</td><td>0.07 [cite: 457]</td></tr>
                         <tr><td>2023</td><td>25,073 [cite: 457]</td><td>70 [cite: 457]</td><td>0.98 [cite: 457]</td><td>0.05 [cite: 457]</td></tr>
-                        <tr><td>2024</td><td>36,000 [cite: 457]</td><td>100 [cite: 457]</td><td>0.80 [cite: 457]</td><td>0.04 [cite: 457]</td></tr>
                         <tr><td>2025</td><td>43,200 [cite: 457]</td><td>120 [cite: 457]</td><td>0.69 [cite: 457]</td><td>0.03 [cite: 457]</td></tr>
                     </tbody>
                 </table>
             </div>
-        </section>
 
-        <section id="tecnologia">
-            <h2 class="section-title">6. Implementación de Tecnologías Innovadoras</h2>
-            <p>Para mitigar los riesgos geotécnicos del hundimiento de bloques, Codelco priorizó instrumentación de vanguardia[cite: 480, 482]:</p>
-            <ul>
-                <li><strong>Monitoreo Remoto IoT:</strong> Uso de tecnología LoRA inalámbrica y registradores con baterías de hasta 10 años de autonomía para el control del macizo rocoso[cite: 485, 486, 500].</li>
-                <li><strong>Robótica Autónoma:</strong> Integración del robot cuadrúpedo <strong>SPOT de Boston Dynamics</strong> para realizar escaneo de hormigón, termografía de seguridad y mapeo geológico del frente de excavación de forma remota[cite: 520].</li>
-                <li><strong>Centro Integrado de Operaciones (CIO):</strong> Un "cerebro" remoto ubicado a 10 km que permite a los operadores telecomandar camiones, sistemas de chancado y el manejo de materiales en tiempo real desde la superficie[cite: 523, 524, 533, 546].</li>
-            </ul>
-        </section>
+            <div class="slide">
+                <h2>6. Innovación Tecnológica y Robótica</h2>
+                <p>La automatización y seguridad son los pilares fundamentales del proyecto subterráneo[cite: 544, 545]:</p>
+                <ul>
+                    <li><strong>Robot SPOT (Boston Dynamics):</strong> Utilizado para escaneo 3D de frentes, termografía e inspección geológica segura[cite: 520].</li>
+                    <li><strong>Monitoreo Inalámbrico IoT:</strong> Redes LoRA inalámbricas subterráneas de bajo mantenimiento y alta disponibilidad de datos[cite: 486, 488].</li>
+                    <li><strong>Centro Integrado de Operaciones (CIO):</strong> El cerebro de la mina que permite operar camiones y plantas de chancado de forma remota a 10 km del tajo[cite: 523, 524, 533].</li>
+                </ul>
+            </div>
 
+        </div>
+
+        <div class="controls">
+            <button class="nav-btn" id="btn-ant" onclick="cambiarSlide(-1)" disabled>◀ Anterior</button>
+            <div class="slide-counter" id="contador">Diapositiva 1 de 9</div>
+            <button class="nav-btn" id="btn-sig" onclick="cambiarSlide(1)">Siguiente ▶</button>
+        </div>
     </div>
 
-    <footer>
-        <p>Carrera de Ingeniería de Minas - FIGEMPA - UCE (2024-2025)</p> [cite: 9, 10, 15]
-    </footer>
+    <script>
+        let currentSlideIndex = 0;
+        const slides = document.querySelectorAll('.slide');
+        const menuItems = document.querySelectorAll('.sidebar-menu li');
+        const btnAnt = document.getElementById('btn-ant');
+        const btnSig = document.getElementById('btn-sig');
+        const contador = document.getElementById('contador');
 
+        function mostrarDiapositiva(index) {
+            // Ocultar slide y remover clase activa del menú anterior
+            slides[currentSlideIndex].classList.remove('active');
+            menuItems[currentSlideIndex].classList.remove('active');
+
+            // Actualizar índice actual
+            currentSlideIndex = index;
+
+            // Mostrar el nuevo slide y activar ítem del menú
+            slides[currentSlideIndex].classList.add('active');
+            menuItems[currentSlideIndex].classList.add('active');
+
+            // Actualizar el contador de texto inferior
+            contador.textContent = `Diapositiva ${currentSlideIndex + 1} de ${slides.length}`;
+
+            // Controlar estados de habilitación de botones
+            btnAnt.disabled = (currentSlideIndex === 0);
+            btnSig.disabled = (currentSlideIndex === slides.length - 1);
+        }
+
+        function cambiarSlide(direccion) {
+            let nuevoIndex = currentSlideIndex + direccion;
+            if (nuevoIndex >= 0 && nuevoIndex < slides.length) {
+                mostrarDiapositiva(nuevoIndex);
+            }
+        }
+
+        function irADiapositiva(index) {
+            mostrarDiapositiva(index);
+        }
+
+        // Permitir controlar las diapositivas también con las flechas del teclado físico
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight') cambiarSlide(1);
+            if (e.key === 'ArrowLeft') cambiarSlide(-1);
+        });
+    </script>
 </body>
 </html>
