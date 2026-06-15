@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistemas Combinados - Visor Interactivo</title>
+    <title>Sistemas Combinados y Métodos de Explotación</title>
     <style>
         :root {
             --primary-color: #1a365d;
@@ -26,15 +26,14 @@
             overflow: hidden;
         }
 
-        /* BARRA LATERAL (MENÚ DESPLEGABLE / NAVEGACIÓN) */
+        /* BARRA LATERAL (MENÚ) */
         .sidebar {
-            width: 280px;
+            width: 300px;
             background-color: var(--sidebar-bg);
             color: var(--sidebar-text);
             display: flex;
             flex-direction: column;
             box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
             z-index: 10;
         }
 
@@ -45,11 +44,7 @@
             border-bottom: 1px solid rgba(255,255,255,0.1);
         }
 
-        .sidebar-header h3 {
-            margin: 0;
-            font-size: 1.1rem;
-            letter-spacing: 0.5px;
-        }
+        .sidebar-header h3 { margin: 0; font-size: 1.1rem; }
 
         .sidebar-menu {
             list-style: none;
@@ -60,10 +55,10 @@
         }
 
         .sidebar-menu li {
-            padding: 15px 20px;
+            padding: 12px 20px;
             border-bottom: 1px solid rgba(255,255,255,0.05);
             cursor: pointer;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             transition: background 0.2s;
         }
 
@@ -73,42 +68,40 @@
             font-weight: 600;
         }
 
-        /* ÁREA PRINCIPAL DE LA DIAPOSITIVA */
+        /* ÁREA PRINCIPAL */
         .main-content {
             flex-grow: 1;
             display: flex;
             flex-direction: column;
-            position: relative;
-            height: 100%;
             background-color: #e2e8f0;
+            height: 100%;
         }
 
-        /* CONTENEDOR DE LA DIAPOSITIVA ACTIVA */
         .slide-container {
             flex-grow: 1;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 40px;
+            padding: 25px;
             overflow-y: auto;
         }
 
         .slide {
             background: white;
             width: 100%;
-            max-width: 850px;
-            height: 550px;
-            padding: 40px;
+            max-width: 960px;
+            height: 580px;
+            padding: 35px;
             border-radius: 12px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
             box-sizing: border-box;
-            display: none; /* Se ocultan todas por defecto */
+            display: none;
             flex-direction: column;
-            position: relative;
+            overflow-y: auto;
         }
 
         .slide.active {
-            display: flex; /* Solo se muestra la activa */
+            display: flex;
             animation: fadeIn 0.4s ease;
         }
 
@@ -117,48 +110,55 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* TEXTO DENTRO DE LAS DIAPOSITIVAS */
         .slide h2 {
             color: var(--primary-color);
             margin-top: 0;
             border-bottom: 2px solid #edf2f7;
-            padding-bottom: 10px;
-            font-size: 1.8rem;
+            padding-bottom: 8px;
+            font-size: 1.6rem;
         }
 
-        .slide h3 {
-            color: var(--secondary-color);
+        .slide h3 { color: var(--secondary-color); margin: 10px 0 5px 0; font-size: 1.2rem; }
+        .slide p { font-size: 1rem; line-height: 1.5; text-align: justify; color: #4a5568; }
+
+        /* DISEÑO FLEXIBLE: TEXTO + IMAGEN */
+        .content-layout {
+            display: flex;
+            gap: 25px;
+            align-items: center;
             margin-top: 10px;
         }
 
-        .slide p {
-            font-size: 1.1rem;
-            line-height: 1.6;
-            text-align: justify;
-            color: #4a5568;
+        .text-side { flex: 1.1; }
+        
+        .image-side {
+            flex: 0.9;
+            background: #ffffff;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #cbd5e0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
 
-        .highlight-box {
-            background-color: #fffaf0;
-            border-left: 5px solid var(--accent-color);
-            padding: 20px;
-            margin: 15px 0;
-            font-style: italic;
-            border-radius: 4px;
-        }
-
-        /* TABLAS ESTILIZADAS */
-        table {
+        .image-side img {
             width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-            font-size: 0.9rem;
+            height: auto;
+            max-height: 340px;
+            object-fit: contain;
+            display: block;
+            margin: 0 auto;
         }
-        th { background-color: var(--primary-color); color: white; padding: 10px; text-align: left; }
-        td { padding: 10px; border-bottom: 1px solid #e2e8f0; }
-        tr:nth-child(even) { background-color: #f8fafc; }
 
-        /* BOTONES DE NAVEGACIÓN (ADELANTAR Y RETROCEDER) */
+        .image-caption {
+            font-size: 0.8rem;
+            color: #718096;
+            text-align: center;
+            margin-top: 8px;
+            font-style: italic;
+            font-weight: 500;
+        }
+
+        /* CONTROLES NAVEGACIÓN */
         .controls {
             background-color: white;
             padding: 15px 30px;
@@ -166,7 +166,6 @@
             justify-content: space-between;
             align-items: center;
             border-top: 1px solid #cbd5e0;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
         }
 
         .nav-btn {
@@ -178,17 +177,11 @@
             border-radius: 6px;
             cursor: pointer;
             font-weight: 600;
-            transition: background 0.2s;
         }
 
         .nav-btn:hover { background-color: var(--secondary-color); }
         .nav-btn:disabled { background-color: #cbd5e0; cursor: not-allowed; }
-
-        .slide-counter {
-            font-weight: 600;
-            color: #718096;
-            font-size: 0.95rem;
-        }
+        .slide-counter { font-weight: 600; color: #718096; }
     </style>
 </head>
 <body>
@@ -196,18 +189,16 @@
     <div class="sidebar">
         <div class="sidebar-header">
             <h3>SUBTERRÁNEA II</h3>
-            <span style="font-size: 0.8rem; opacity: 0.8;">UCE - FIGEMPA [cite: 16]</span>
+            <span style="font-size: 0.8rem; opacity: 0.8;">UCE - FIGEMPA</span>
         </div>
         <ul class="sidebar-menu" id="menu">
             <li class="active" onclick="irADiapositiva(0)">Portada del Informe</li>
-            <li onclick="irADiapositiva(1)">1. Antecedentes</li>
-            <li onclick="irADiapositiva(2)">2. Objetivos del Proyecto</li>
-            <li onclick="irADiapositiva(3)">3. Hipótesis Técnica</li>
-            <li onclick="irADiapositiva(4)">4.1 Geología del Pórfido</li>
-            <li onclick="irADiapositiva(5)">4.2 Parámetros Rajo Abierto</li>
-            <li onclick="irADiapositiva(6)">4.3 Explotación Subterránea</li>
-            <li onclick="irADiapositiva(7)">5. Plan de Producción</li>
-            <li onclick="irADiapositiva(8)">6. Innovación y Robótica</li>
+            <li onclick="irADiapositiva(1)">1. Antecedentes PMCHS</li>
+            <li onclick="irADiapositiva(2)">4.1 Ubicación y Geología</li>
+            <li onclick="irADiapositiva(3)">Método: Corte y Relleno 3D</li>
+            <li onclick="irADiapositiva(4)">Esquema Técnico (Mina Milpo)</li>
+            <li onclick="irADiapositiva(5)">Minado Convencional Ascendente</li>
+            <li onclick="irADiapositiva(6)">Maqueta: Veta Mirella</li>
         </ul>
     </div>
 
@@ -216,116 +207,103 @@
 
             <div class="slide active">
                 <div style="text-align: center; margin-top: 40px;">
-                    <h2 style="border:none; font-size: 2.2rem; color: var(--primary-color);">SISTEMAS COMBINADOS</h2>
-                    <h3 style="color: var(--accent-color);">Caso de Estudio: Chuquicamata [cite: 12, 40]</h3>
-                    <div style="margin-top: 50px; line-height: 2; font-size: 1.1rem;">
-                        <p style="text-align:center;"><strong>UNIVERSIDAD CENTRAL DEL ECUADOR</strong><br> [cite: 9]
-                        Facultad de Ingeniería en Geología, Minas, Petróleos y Ambiental [cite: 9]<br>
-                        <strong>Realizado por:</strong> Cristina Tubón [cite: 13]<br>
-                        <strong>Docente:</strong> Doc. Marco Zaldumbide [cite: 14]<br>
-                        Periodo: 2024-2025 [cite: 15]</p>
+                    <h2 style="border:none; font-size: 2rem; color: var(--primary-color);">SISTEMAS COMBINADOS Y MÉTODOS DE MINADO</h2>
+                    <h3 style="color: var(--accent-color);">Modelos y Aplicaciones Técnicas en Minería Subterránea</h3>
+                    <div style="margin-top: 50px; line-height: 1.8; font-size: 1.05rem;">
+                        <p style="text-align:center;"><strong>UNIVERSIDAD CENTRAL DEL ECUADOR</strong><br>
+                        Facultad de Ingeniería en Geología, Minas, Petróleos y Ambiental<br>
+                        <strong>Realizado por:</strong> Cristina Tubón<br>
+                        <strong>Docente:</strong> Doc. Marco Zaldumbide<br>
+                        Periodo: 2024-2025</p>
                     </div>
                 </div>
             </div>
 
             <div class="slide">
-                <h2>1. Antecedentes</h2>
-                <p>El complejo minero de la División Chuquicamata se encuentra a 1.650 kilómetros al norte de Santiago, en la II Región de Antofagasta, a una altitud de 2.900 metros sobre el nivel del mar[cite: 34]. Este complejo incluye tres minas a cielo abierto[cite: 35].</p>
-                <p>Sin embargo, la intensa explotación de la Mina Chuquicamata durante los últimos 100 años ha provocado un aumento en la profundidad del rajo, lo que ha incrementado la relación estéril/mineral[cite: 36]. Esto, a su vez, ha elevado los costos operativos debido a la mayor distancia que deben recorrer los camiones y equipos mineros, haciendo que la operación sea menos rentable[cite: 37].</p>
+                <h2>1. Antecedentes Generales</h2>
+                <p>La explotación intensiva de yacimientos a cielo abierto durante décadas genera un incremento crítico en la profundidad del rajo, elevando la relación estéril/mineral y disparando los costos de transporte logístico.</p>
+                <p>Como respuesta de ingeniería frente a la pérdida de rentabilidad económica, la transición estratégica hacia sistemas de explotación subterráneos combinados permite recuperar de forma eficiente las reservas remanentes bajo los taludes finales del Pit, asegurando la sostenibilidad del proyecto minero a largo plazo.</p>
             </div>
 
             <div class="slide">
-                <h2>2. Objetivos del Proyecto</h2>
-                <h3>2.1 Objetivo General</h3>
-                <p>Identificar, a través de una investigación exhaustiva, un modelo de mina que implemente eficazmente un sistema de explotación combinado, integrando técnicas de minería a cielo abierto y subterráneo para maximizar la recuperación de recursos minerales[cite: 49].</p>
-                <h3>2.2 Objetivos Específicos</h3>
-                <ul>
-                    <li>Describir el proceso que llevó a la implementación del sistema de explotación combinada[cite: 51].</li>
-                    <li>Investigar las tecnologías innovadoras aplicadas en la mina Chuquicamata y su impacto en la eficiencia[cite: 52].</li>
-                    <li>Analizar las tendencias de producción y reservas del periodo 2019 al 2025[cite: 53].</li>
-                </ul>
-            </div>
-
-            <div class="slide">
-                <h2>3. Hipótesis Técnica</h2>
-                <div class="highlight-box">
-                    "La transición hacia un sistema de explotación subterránea en el complejo minero de Chuquicamata, como respuesta a la disminución de la rentabilidad de la minería a cielo abierto, permite una recuperación más eficiente de recursos minerales, mejora la sostenibilidad económica del proyecto a largo plazo y a la vez reducirá significativamente los costos operativos..." [cite: 55]
-                </div>
-                <p>La implementación del PMCHS no solo buscará recuperar minerales, sino también asegurar que la operación sea económicamente viable al reducir la relación estéril/mineral y los costos asociados al transporte[cite: 58].</p>
-            </div>
-
-            <div class="slide">
-                <h2>4.1 Geología del Yacimiento</h2>
-                <p>Chuquicamata es un yacimiento de cobre diseminado que está delimitado al Oeste por una falla regional denominada Falla Oeste, presentando una secuencia de alteración de las rocas en el sentido Oeste-Este con una gran persistencia en la vertical[cite: 133].</p>
-                <p>Esto se traduce en una fuerte intercalación de rocas más y menos competentes en el lado Oeste del yacimiento, diversidad que decae gradualmente hacia el lado Este, donde las rocas presentan características más uniformes[cite: 134]. La presencia de mineralización es más intensa en las rocas con mayor alteración[cite: 135].</p>
-            </div>
-
-            <div class="slide">
-                <h2>4.2 Parámetros Cielo Abierto (Open Pit)</h2>
-                <p>Dimensiones y parámetros globales de diseño geométrico del Pit final[cite: 171, 178]:</p>
-                <table>
-                    <thead>
-                        <tr><th>Parámetro Geométrico</th><th>Dimensión Técnica</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>Largo del Pit</td><td>4.200 m [cite: 181]</td></tr>
-                        <tr><td>Ancho del Pit</td><td>3.000 m [cite: 181]</td></tr>
-                        <tr><td>Profundidad Final</td><td>803 m [cite: 181]</td></tr>
-                        <tr><td>Pendiente Media Rampa Sector Este</td><td>10% [cite: 181]</td></tr>
-                        <tr><td>Altura de Banco</td><td>22 m [cite: 181]</td></tr>
-                        <tr><td>Ángulo de Talud Global</td><td>42° [cite: 181]</td></tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="slide">
-                <h2>4.3 Explotación Subterránea</h2>
-                <p>La explotación se desarrollará aplicando el método de <strong>hundimiento por bloques (Block Caving)</strong>, en configuración de <strong>Macro Bloques</strong>[cite: 183]. Cada macro bloque contempla en su diseño el desarrollo de seis niveles operativos[cite: 243]:</p>
-                <div style="display:flex; justify-content: space-around; margin-top:20px;">
-                    <ul>
-                        <li>Nivel de hundimiento [cite: 244]</li>
-                        <li>Nivel de producción (LHD) [cite: 245, 261]</li>
-                        <li>Nivel de inyección de aire [cite: 246]</li>
-                    </ul>
-                    <ul>
-                        <li>Nivel de extracción de aire [cite: 247]</li>
-                        <li>Nivel de chancado [cite: 248]</li>
-                        <li>Nivel de transporte [cite: 249]</li>
-                    </ul>
+                <h2>4.1 Ubicación y Contexto Geotécnico</h2>
+                <div class="content-layout">
+                    <div class="text-side">
+                        <p>Los depósitos porfídicos diseminados de gran escala requieren un análisis estructural riguroso. La presencia de fallas regionales segmenta el macizo rocoso en dominios estructurales y unidades geotécnicas básicas bien definidas.</p>
+                        <p>Esta caracterización resulta fundamental, ya que la sobreimposición de alteraciones hidrotermales sobre la litología base determina la competencia mecánica de la roca, dictando la selección óptima del método de hundimiento o soporte estructural.</p>
+                    </div>
+                    <div class="image-side">
+                        <img src="figura1.png" alt="Contexto Geológico">
+                        <div class="image-caption">Figura: Bloque estructural y dominios del yacimiento</div>
+                    </div>
                 </div>
             </div>
 
             <div class="slide">
-                <h2>5. Plan de Producción (Ramp Up)</h2>
-                <p>Plan de producción física y variaciones de leyes de cobre para el periodo evaluado[cite: 456, 457]:</p>
-                <table>
-                    <thead>
-                        <tr><th>Año</th><th>Producción (kton)</th><th>Ritmo (ktpd)</th><th>Ley Cu (%)</th><th>Ley Mo (%)</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>2019</td><td>3,600 [cite: 457]</td><td>10 [cite: 457]</td><td>1.06 [cite: 457]</td><td>0.07 [cite: 457]</td></tr>
-                        <tr><td>2021</td><td>7,200 [cite: 457]</td><td>20 [cite: 457]</td><td>1.15 [cite: 457]</td><td>0.08 [cite: 457]</td></tr>
-                        <tr><td>2023</td><td>25,073 [cite: 457]</td><td>70 [cite: 457]</td><td>0.98 [cite: 457]</td><td>0.05 [cite: 457]</td></tr>
-                        <tr><td>2025</td><td>43,200 [cite: 457]</td><td>120 [cite: 457]</td><td>0.69 [cite: 457]</td><td>0.03 [cite: 457]</td></tr>
-                    </tbody>
-                </table>
+                <h2>Método de Corte y Relleno Ascendente (3D)</h2>
+                <div class="content-layout">
+                    <div class="text-side">
+                        <h3>Perforación Inclinada en Vetas</h3>
+                        <p>Este bloque tridimensional ilustra el ciclo operativo clásico del método aplicado a cuerpos tabulares delgados o vetas con buzamientos pronunciados (ej. 60°).</p>
+                        <p>Se aprecia claramente la delimitación entre la caja piso y la caja techo, la disposición de las chimeneas de servicio en los extremos para ventilación y accesos, y el avance del minado apoyado sobre capas sucesivas de relleno detrítico compactado.</p>
+                    </div>
+                    <div class="image-side">
+                        <img src="corte_relleno_3d.png" alt="Esquema Isométrico Corte y Relleno">
+                        <div class="image-caption">Esquema: Perforación inclinada en veta angosta con estructura de evacuación (Chute)</div>
+                    </div>
+                </div>
             </div>
 
             <div class="slide">
-                <h2>6. Innovación Tecnológica y Robótica</h2>
-                <p>La automatización y seguridad son los pilares fundamentales del proyecto subterráneo[cite: 544, 545]:</p>
-                <ul>
-                    <li><strong>Robot SPOT (Boston Dynamics):</strong> Utilizado para escaneo 3D de frentes, termografía e inspección geológica segura[cite: 520].</li>
-                    <li><strong>Monitoreo Inalámbrico IoT:</strong> Redes LoRA inalámbricas subterráneas de bajo mantenimiento y alta disponibilidad de datos[cite: 486, 488].</li>
-                    <li><strong>Centro Integrado de Operaciones (CIO):</strong> El cerebro de la mina que permite operar camiones y plantas de chancado de forma remota a 10 km del tajo[cite: 523, 524, 533].</li>
-                </ul>
+                <h2>Esquema Técnico Operativo: Corte y Relleno</h2>
+                <div class="content-layout">
+                    <div class="text-side">
+                        <h3>Infraestructura de Transporte y Servicios</h3>
+                        <p>Vista en sección longitudinal detallada del minado con perforación al techo. El diseño muestra la integración crítica entre la galería de transporte principal inferior (emplazada en roca caliza) y los cruceros de carguío.</p>
+                        <p>Los piques de traspaso de mineral (Ore Pass) y los caminos de servicio (Ch. Camino) conectan los tajos de producción activos directamente con los sistemas de acarreo mecanizado (camiones dumper).</p>
+                    </div>
+                    <div class="image-side">
+                        <img src="esquema_milpo.png" alt="Esquema Técnico Mina Milpo">
+                        <div class="image-caption">Esquema: Distribución de galerías auxiliares, líneas de anclaje (Split Set) y muros de relleno</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slide">
+                <h2>Minado por el Método Convencional Ascendente</h2>
+                <div class="content-layout">
+                    <div class="text-side">
+                        <h3>Secuencia de Limpieza y Relleno Detrítico</h3>
+                        <p>Este plano de ingeniería detalla la macrosecuencia de un block de mineral típico de 50 metros de longitud por 40 metros de altura.</p>
+                        <p>El frente se divide simétricamente para optimizar los ciclos operativos: mientras en un sector (ala derecha) se ejecutan las labores de perforación y voladura, en el sector opuesto (ala izquierda) se realiza la limpieza del mineral quebrado y el vaciado del relleno detrítico estabilizador mediante puentes estructurales.</p>
+                    </div>
+                    <div class="image-side">
+                        <img src="minado_convencional.png" alt="Plano Minado Convencional">
+                        <div class="image-caption">Plano: Distribución simétrica de buzones de camino, limpieza y block in situ</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="slide">
+                <h2>Visualización Física: Mina Inmaculada (Veta Mirella)</h2>
+                <div class="content-layout">
+                    <div class="text-side">
+                        <h3>Modelamiento Físico a Escala</h3>
+                        <p>La representación mediante maquetas físicas permite validar de forma espacial la interacción real entre la infraestructura de accesos y el cuerpo mineralizado.</p>
+                        <p>En este módulo se observa el tendido mecánico del sistema de winches de arrastre para la evacuación del mineral hacia el pique, la delimitación de chimeneas de izaje y la disposición de las mallas de perforación en tajos angostos de alta selectividad.</p>
+                    </div>
+                    <div class="image-side">
+                        <img src="maqueta_veta.png" alt="Maqueta Mina Inmaculada Veta Mirella">
+                        <div class="image-caption">Fotografía: Maqueta de simulación de operaciones unitarias y carguío subterráneo</div>
+                    </div>
+                </div>
             </div>
 
         </div>
 
         <div class="controls">
             <button class="nav-btn" id="btn-ant" onclick="cambiarSlide(-1)" disabled>◀ Anterior</button>
-            <div class="slide-counter" id="contador">Diapositiva 1 de 9</div>
+            <div class="slide-counter" id="contador">Diapositiva 1 de 7</div>
             <button class="nav-btn" id="btn-sig" onclick="cambiarSlide(1)">Siguiente ▶</button>
         </div>
     </div>
@@ -339,21 +317,16 @@
         const contador = document.getElementById('contador');
 
         function mostrarDiapositiva(index) {
-            // Ocultar slide y remover clase activa del menú anterior
             slides[currentSlideIndex].classList.remove('active');
             menuItems[currentSlideIndex].classList.remove('active');
 
-            // Actualizar índice actual
             currentSlideIndex = index;
 
-            // Mostrar el nuevo slide y activar ítem del menú
             slides[currentSlideIndex].classList.add('active');
             menuItems[currentSlideIndex].classList.add('active');
 
-            // Actualizar el contador de texto inferior
             contador.textContent = `Diapositiva ${currentSlideIndex + 1} de ${slides.length}`;
 
-            // Controlar estados de habilitación de botones
             btnAnt.disabled = (currentSlideIndex === 0);
             btnSig.disabled = (currentSlideIndex === slides.length - 1);
         }
@@ -369,7 +342,6 @@
             mostrarDiapositiva(index);
         }
 
-        // Permitir controlar las diapositivas también con las flechas del teclado físico
         document.addEventListener('keydown', function(e) {
             if (e.key === 'ArrowRight') cambiarSlide(1);
             if (e.key === 'ArrowLeft') cambiarSlide(-1);
