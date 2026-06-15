@@ -3,14 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Sitio Web Subterráneo</title>
+    <title>Cátedra: Subterránea II - INFORME FINAL</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; background-color: #f4f4f9; padding: 50px; }
-        h1 { color: #2c3e50; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .header-container {
+            text-align: center;
+            margin-bottom: 30px;
+            max-width: 800px;
+            background: white;
+            padding: 20px 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        h1 { color: #1a365d; margin-bottom: 5px; font-size: 24px; }
+        h2 { color: #2c5282; margin-top: 0; font-size: 18px; font-weight: 500; }
+        p.meta { color: #718096; margin: 5px 0 0 0; font-size: 14px; }
+        .pagina-contenedor {
+            background: white;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            border-radius: 8px;
+            padding: 25px;
+            max-width: 850px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        canvas {
+            width: 100%;
+            height: auto;
+            border-bottom: 1px dashed #cbd5e0;
+            margin-bottom: 20px;
+            background-color: #fafafa;
+        }
+        .texto-extraido {
+            font-size: 15px;
+            line-height: 1.6;
+            color: #2d3748;
+            white-space: pre-wrap;
+            background-color: #f7fafc;
+            padding: 15px;
+            border-left: 4px solid #3182ce;
+            border-radius: 0 4px 4px 0;
+        }
     </style>
 </head>
 <body>
-    <h1>¡Hola Mundo desde GitHub Pages!</h1>
-    <p>Mi primera página web ya está lista.</p>
+
+    <div class="header-container">
+        <h1>Sistemas Combinados - Chuquicamata</h1>
+        <h2>Cátedra: Subterránea II</h2>
+        <p class="meta">Realizado por: Cristina Tubón | Docente: Doc. Marco Zaldumbide | 2024-2025</p>
+    </div>
+
+    <div id="contenedor-pdf"></div>
+
+    <script>
+        // Nombre exacto del archivo que acabas de subir a tu GitHub
+        const url = 'INFORME FINAL.pdf'; 
+
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+
+        pdfjsLib.getDocument(url).promise.then(pdf => {
+            const contenedor = document.getElementById('contenedor-pdf');
+
+            for (let numPagina = 1; numPagina <= pdf.numPages; numPagina++) {
+                
+                const divPagina = document.createElement('div');
+                divPagina.className = 'pagina-contenedor';
+                
+                const canvas = document.createElement('canvas');
+                const divTexto = document.createElement('div');
+                divTexto.className = 'texto-extraido';
+                
+                divPagina.appendChild(canvas);
+                divPagina.appendChild(divTexto);
+                contenedor.appendChild(divPagina);
+
+                pdf.getPage(numPagina).then(page => {
+                    // 1. Renderizar la página visualmente como imagen nítida
+                    const viewport = page.getViewport({ scale: 1.5 });
+                    const context = canvas.getContext('2d');
+                    canvas.height = viewport.height;
+                    canvas.width = viewport.width;
+
+                    const renderContext = {
+                        canvasContext: context,
+                        viewport: viewport
+                    };
+                    page.render(renderContext);
+
+                    // 2. Extraer el texto de la página en tiempo real
+                    page.getTextContent().then(textContent => {
+                        const textoCompleto = textContent.items.map(item => item.str).join(' ');
+                        if(textoCompleto.trim() === "") {
+                            divTexto.innerHTML = `<em>[Página ${page.pageNumber}]: Contenido principalmente gráfico o imagen.</em>`;
+                        } else {
+                            divTexto.textContent = textoCompleto;
+                        }
+                    });
+                });
+            }
+        }).catch(error => {
+            console.error('Error al abrir el PDF: ', error);
+            document.getElementById('contenedor-pdf').innerHTML = 
+                '<p style="color:red; text-align:center; font-weight:bold;">Error: Asegúrate de que el archivo se llame exactamente "INFORME FINAL.pdf" y esté en el mismo repositorio.</p>';
+        });
+    </script>
 </body>
 </html>
